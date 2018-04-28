@@ -32,9 +32,9 @@
     <Compile Include="public\js\socket.io.js" />
     <Compile Include="server.js" />
     <Content Include="config.env" />
+    <Content Include="imglink.bat" />
     <Content Include="package.json" />
     <Content Include="public\css\style.css" />
-    <Content Include="public\css\style.styl" />
     <Content Include="public\index.html" />
     <Content Include="README.md" />
   </ItemGroup>
