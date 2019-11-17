@@ -2,15 +2,16 @@
 body {
     font-family: Avenir, Arial, sans-serif;
     margin: 0;
-    font-size: 0;
     background-color: black;
 }
 
-img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: black;
+/* Make the chart container fill the page using CSS. */
+#container {
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
 }
 
 

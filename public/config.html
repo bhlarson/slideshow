@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Curtain Configuration</title>
+    <!--link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"-->
+    <!--link href="css/style.css" rel="stylesheet" /-->
+</head>
+
+<body>
+    <div>
+        <input type="button" id="Main" onclick="location.href='..'" value="Main" />
+        <input type="button" id="Login" onclick="LogIn()" value="Log In" />
+    </div>
+    <br>
+    <fieldset>
+        Slide Show Configuration:<br>
+        <form action="#" onsubmit="SubmitConfig()">
+            Image Duration (s): <input type="number" id="Duration" min="2" max="15" value="5"/><br>
+            Random Order: <input type="checkbox" id="Random" checked="True"/><br>
+            <input type="submit">
+        </form>
+    </fieldset>
+    <br>
+    <fieldset>
+        Manage Pictures:<br>
+        Load Pictures  <input type="file" id="LoadPictures" onclick="LoadPictures()"/><br>
+        <input type="button" id="Delete" value="Delete Selected" onclick="DeletePictures()"/>
+        <table border="1" id="mediaTable">
+            <thead>
+                <tr>
+                    <td>File Name</td>
+                    <td>File Type</td>
+                    <td>File Path</td>
+                    <td>URL</td>
+                    <td>Display</td>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </fieldset>
+
+    <script src="js/config.js"></script>
+</body>
+
+</html>
