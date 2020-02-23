@@ -73,7 +73,7 @@ function UpdateMedia(media) {
 }
 
 window.onload = function () {
-    media_url = window.location.origin + "/GetMedia";
+    media_url = window.location.origin + "/GetMediaList";
     fetch(media_url).then((response) => response.json()).then(in_media => {
         media = in_media;
         UpdateMedia(media)

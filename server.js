@@ -53,6 +53,8 @@ for (var i in imFiles) {
 var port = Number(process.env.nodeport) || 1337;
 app.use(express.static('public'));
 
+app.use('/media', express.static("P:"));
+
 app.get('/', function (req, res) {
     res.sendFile('index.html');
 });
@@ -61,7 +63,13 @@ app.get('/GetImages', function (req, res) {
     res.send(imFiles);
 });
 
-app.get('/GetMedia', function (req,res){
+app.get('/GetMediaList', function (req,res){
+    GetEntries().then(function (dbentries) {
+        res.send(dbentries);
+    });
+});
+
+app.get('/GetMediaMap', function (req,res){
     GetEntries().then(function (dbentries) {
         res.send(dbentries);
     });
@@ -73,7 +81,17 @@ http.listen(port, function () {
 });
 
 function CreateTables(db) {
-    let addTable = "create table if not exists " + process.env.datatable + " ( \
+    let addMapTable = "create table if not exists " + process.env.datamap + " ( \
+        path TEXT NULL DEFAULT NULL COMMENT 'Path to Media Directory',\
+        url TEXT NULL DEFAULT NULL COMMENT 'Top-level URL from server')";
+    
+        db.query(addMapTable, function (err, results, fields) {
+            if (err) {
+                console.log(err.message);
+            }
+        });
+
+    let addMediaTable = "create table if not exists " + process.env.datatable + " ( \
     id int primary key auto_increment COMMENT 'Unique file id',\
     filename TEXT NULL DEFAULT NULL,\
     description TEXT NULL DEFAULT NULL COMMENT 'Description of file',\
@@ -83,7 +101,7 @@ function CreateTables(db) {
     image LONGTEXT NULL DEFAULT NULL COMMENT 'File Details' COLLATE 'utf8mb4_bin',\
     objects LONGTEXT NULL DEFAULT NULL COMMENT 'Objects in file' COLLATE 'utf8mb4_bin')";
 
-    db.query(addTable, function (err, results, fields) {
+    db.query(addMediaTable, function (err, results, fields) {
         if (err) {
             console.log(err.message);
         }
@@ -159,7 +177,13 @@ function AddImagesToDb(db, dbHeader, data){
 function Initialize(){
     CreateTables(pool);
 
-    if(true){
+    //fs.symlink("C:\\Users\\brad.larson1\\Pictures", "C:\\git\\slideshow\\public\\img\\Pictures",'junction', function(){
+    //    var dbData = [];
+    //    BuildImageList01(".\\public\\img", dbData, imageUrl);
+    //    console.log(dbData);
+    //});
+
+    if(false){
         var dbHeader = DBHeader();
         var dbData = [];
         BuildImageList01("C:\\Users\\brad.larson1\\Pictures", dbData, imageUrl);
