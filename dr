@@ -1,0 +1,45 @@
+#!/bin/bash
+
+source ./config/config.sh
+
+if [ "$1" != "" ]; then
+    UTIL_PORTS=$1
+elif [[ -z "${UTIL_PORTS}" ]]; then
+    UTIL_PORTS=32301
+fi
+
+if [ "$2" != "" ]; then
+    image_name="$2"
+elif [[ -z "${image_name}" ]]; then
+    image_name=${slideshow}
+fi
+echo image_name=${image_name}
+
+if [ "$3" != "" ]; then
+    CONTAINER_NAME="$3"
+elif [[ -z "${CONTAINER_NAME}" ]]; then
+    CONTAINER_NAME='slideshow'
+fi
+echo CONTAINER_NAME=${CONTAINER_NAME}
+
+
+iPort=${UTIL_PORTS}
+PORT1=$((iPort++))
+PORT2=$((iPort++))
+PORT3=$((iPort++))
+PORT4=$((iPort++))
+PORT5=$((iPort++))
+
+echo UTIL_PORTS ${PORT1} ${PORT2} ${PORT3} ${PORT4}
+set -x
+
+docker run --ipc=host -it --rm \
+    -p ${PORT1}:80 \
+    -p ${PORT2}:443 \
+    -p ${PORT3}:3000 \
+    -p ${PORT4}:5000 \
+    -p ${PORT5}:8888 \
+    -v "$(pwd):/app" \
+    -e PYDEVD_WARN_SLOW_RESOLVE_TIMEOUT=2 \
+    --entrypoint=/bin/bash \
+    ${image_name}

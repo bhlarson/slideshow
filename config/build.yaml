@@ -1,0 +1,19 @@
+name: slideshow
+description: System modeling playground
+dockerbuild:
+- name: slideshow
+  dockerfile: dockerfile
+  context: .
+  build_arg:
+  - key: IMAGE
+    value: ubuntu:20.04
+version:
+  major: 0
+  minor: 0
+  patch: 5
+  label: ''
+gpus: all
+registry: localhost:32000
+image_names:
+- name: slideshow
+  image_name: localhost:32000/slideshow:0.0.5

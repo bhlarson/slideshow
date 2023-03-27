@@ -1,0 +1,49 @@
+#!/bin/bash
+
+source ./config/config.sh
+
+if [ "$1" != "" ]; then
+    UTIL_PORTS=$1
+elif [[ -z "${UTIL_PORTS}" ]]; then
+    UTIL_PORTS=4442
+fi
+
+if [ "$2" != "" ]; then
+    image_name="$2"
+elif [[ -z "${image_name}" ]]; then
+    image_name=${slideshow}
+fi
+echo image_name=${image_name}
+
+if [ "$3" != "" ]; then
+    CONTAINER_NAME="$3"
+elif [[ -z "${CONTAINER_NAME}" ]]; then
+    CONTAINER_NAME='slideshow'
+fi
+echo CONTAINER_NAME=${CONTAINER_NAME}
+
+
+iPort=${UTIL_PORTS}
+PORT1=$((iPort++))
+PORT2=$((iPort++))
+PORT3=$((iPort++))
+PORT4=$((iPort++))
+PORT5=$((iPort++))
+
+echo UTIL_PORTS ${PORT1} ${PORT2} ${PORT3} ${PORT4}
+
+docker stop ${CONTAINER_NAME} || true && docker rm ${CONTAINER_NAME} || true
+
+set -x
+
+#docker stop -t 10 KSTest
+#docker rm KSTest
+docker run -d --restart unless-stopped \
+    --name $CONTAINER_NAME \
+    -p ${PORT1}:80 \
+    -p ${PORT2}:443 \
+    -p ${PORT3}:3000 \
+    -p ${PORT4}:5000 \
+    -p ${PORT5}:8888 \
+     -e PYDEVD_WARN_SLOW_RESOLVE_TIMEOUT=2 \
+    ${image_name}
