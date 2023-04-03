@@ -6,14 +6,16 @@
 # ==============================================================================
 
 from __future__ import division
-import sys, os
+import sys, os, re
 import uuid
 import time
 import yaml
 import pickle
 import pprint
+import random
 from os.path import dirname, abspath, join, isdir
 from os import listdir
+from pathlib import Path
 from hmac import compare_digest
 from flask import Flask, request, jsonify, send_from_directory, Response, logging
 from flask_httpauth import HTTPTokenAuth
@@ -37,7 +39,7 @@ def parse_arguments():
     parser.add_argument('-creds', type=str, default='creds.yaml', help='Credentials file')
     parser.add_argument('-cert', type=str, default='cert.pem', help='Certificate path')
     parser.add_argument('-key', type=str, default='privkey.pem', help='Key path')
-    parser.add_argument('-port', type=int, default=443, help='webserver port')
+    parser.add_argument('-port', type=int, default=5000, help='webserver port')
     parser.add_argument('-client_address', type=str, default='0.0.0.0', help='Client address.  0.0.0.0 accepts all clients')
     parser.add_argument('-verbose', type=bool, default=True, help='Wait for debuggee attach')
     parser.add_argument('-model_dockembedding', type=str, default='text-embedding-ada-002', help='OpenAI model name')
@@ -50,6 +52,7 @@ def parse_arguments():
     parser.add_argument('-s3_name', type=str, default='knowledgescope', help='S3 name in credentials')
     parser.add_argument('-api', type=str, default='AzureOpenaiDev', help='Credentials file')
     parser.add_argument('-db', type=str, default='ks', help='Web server port')
+    parser.add_argument('-pictures', type=str, default='/farm/pictures', help='Pictures path')
 
 
     args = parser.parse_args()
@@ -76,14 +79,12 @@ def verify_token(token):
 
 # Methods to show client
 @app.route('/')
-#@auth.login_required
-def get_bot1():
+def get_static():
     return send_from_directory("../ui/", "index.html")
 
 @app.route('/<file>', defaults={'path': ''})
 @app.route('/<path:path>/<file>')
-#@auth.login_required
-def get_bot2(path, file):
+def get_files(path, file):
     return send_from_directory("../ui/" + path, file)
 
 def is_valid(api_key):
@@ -152,12 +153,42 @@ class MyCustomNamespace(Namespace):
 
 socketio.on_namespace(MyCustomNamespace('/test'))
 
+# Serch is regex string.  e.g. '(?i)(?!thumb)'. https://regex101.com/, https://docs.python.org/3/library/re.html
+def ImageList(path= '/farm/pictures', extensions = ['.png', '.jpg'], search = r'(?:thumb|trash)', reflags = re.IGNORECASE):
+    filelist = []
+    # Convert extensions to lower case once at the beginning
+    for i, ext in enumerate(extensions):
+        extensions[i] = ext.lower()
+
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if extensions is not None:
+                extmatch = False
+                ext = Path(file).suffix.lower()
+                for extension in extensions:
+                    if(ext == extension):
+                        extmatch = True
+                        break
+            else:
+                extmatch = True
+            if extmatch:
+                if search is not None:
+                    match = re.search(search, file, reflags)
+                    if not match:
+                        filelist.append('{}/{}'.format(root, file))
+                else:
+                    filelist.append('{}/{}'.format(root, file))
+
+    random.shuffle(filelist)
+    return 
+
     
 def main(args):          
+    print("Server starting at : http://" + args.client_address + ":" + str(args.port) + "/")
 
-    ssl_context = (args.cert, args.key)
-    print("Server starting at : https://" + args.client_address + ":" + str(args.port) + "/")
-    socketio.run(app, host=args.client_address, port=args.port, debug=False, ssl_context=ssl_context)
+    images = ImageList(args.pictures)
+
+    socketio.run(app, host=args.client_address, port=args.port, debug=False)
 
 
 if __name__ == '__main__':
