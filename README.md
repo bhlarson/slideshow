@@ -10,3 +10,5 @@
 
 [Before Dawn](https://github.com/muffinista/before-dawn)
 [web-page-screensaver](https://github.com/cwc/web-page-screensaver/releases)
+
+[Asynchronous background tasks in Flask-application using Celery](https://medium.com/@salimonov/asynchronous-background-tasks-in-flask-application-using-celery-1ba873d260d0)

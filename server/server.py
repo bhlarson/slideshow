@@ -1,11 +1,10 @@
+#!/usr/bin/python3
 # ==============================================================================
 # Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
 #
 # The License information can be found under the "License" section of the
 # README.md file.
 # ==============================================================================
-
-from __future__ import division
 import sys, os, re
 import uuid
 import time
@@ -20,6 +19,10 @@ from hmac import compare_digest
 from flask import Flask, request, jsonify, send_from_directory, Response, logging
 from flask_httpauth import HTTPTokenAuth
 from flask_socketio import SocketIO, ConnectionRefusedError, Namespace, emit
+import asyncio
+import threading
+import time
+import logging
 
 ks_key = None
 ds = None
@@ -62,12 +65,12 @@ def parse_arguments():
 
     return args
 
-
 ''' Flask Initialization 
 '''
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+
 auth = HTTPTokenAuth(scheme='Bearer')
 log = logging.logging.getLogger('werkzeug')
 log.setLevel(logging.logging.ERROR)
@@ -154,7 +157,7 @@ class MyCustomNamespace(Namespace):
 socketio.on_namespace(MyCustomNamespace('/test'))
 
 # Serch is regex string.  e.g. '(?i)(?!thumb)'. https://regex101.com/, https://docs.python.org/3/library/re.html
-def ImageList(path= '/farm/pictures', extensions = ['.png', '.jpg'], search = r'(?:thumb|trash)', reflags = re.IGNORECASE):
+def ImageList(path= '/farm/pictures/', extensions = ['.png', '.jpg'], search = r'(?:thumb|trash)', reflags = re.IGNORECASE):
     filelist = []
     # Convert extensions to lower case once at the beginning
     for i, ext in enumerate(extensions):
@@ -180,13 +183,25 @@ def ImageList(path= '/farm/pictures', extensions = ['.png', '.jpg'], search = r'
                     filelist.append('{}/{}'.format(root, file))
 
     random.shuffle(filelist)
-    return 
+    return filelist
 
-    
+def thread_function(name):
+    logging.info("Thread %s: starting", name)
+    time.sleep(2)
+    logging.info("Thread %s: finishing", name)
+   
 def main(args):          
     print("Server starting at : http://" + args.client_address + ":" + str(args.port) + "/")
 
     images = ImageList(args.pictures)
+
+    logging.info("Main    : before creating thread")
+    x = threading.Thread(target=thread_function, args=(1,))
+    logging.info("Main    : before running thread")
+    x.start()
+    logging.info("Main    : wait for the thread to finish")
+    # x.join()
+    logging.info("Main    : all done")
 
     socketio.run(app, host=args.client_address, port=args.port, debug=False)
 
