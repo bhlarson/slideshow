@@ -10,10 +10,10 @@ dockerbuild:
 version:
   major: 0
   minor: 0
-  patch: 19
+  patch: 20
   label: ''
 gpus: all
 registry: localhost:32000
 image_names:
 - name: slideshow
-  image_name: localhost:32000/slideshow:0.0.19
+  image_name: localhost:32000/slideshow:0.0.20
