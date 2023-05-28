@@ -14,6 +14,7 @@ from flask import request
 from flask import Flask, jsonify, send_from_directory, Response, logging
 import threading
 import time
+import logging
 
 ks_key = None
 ds = None
@@ -58,6 +59,8 @@ def get_static():
 def get_files(path, file):
     return send_from_directory("../ui/" + path, file)
 
+https://fontawesome.com/icons/camera?f=classic&s=solid
+
 def ImageList(path= '/farm/pictures/', extensions = ['.png', '.jpg'], search = r'(?:thumb|trash)', reflags = re.IGNORECASE):
     filelist = []
     # Convert extensions to lower case once at the beginning
@@ -88,23 +91,23 @@ def ImageList(path= '/farm/pictures/', extensions = ['.png', '.jpg'], search = r
 
 def thread_function(name):
     images = ImageList()
-    log.info("Thread %s: starting", name)
+    app.logger.info("Thread %s: starting", name)
     time.sleep(2)
-    log.info("Thread %s: finishing", name)
+    app.logger.info("Thread %s: finishing", name)
     
 def main(args):
 
-    log.info("Main    : before creating thread")
+    app.logger.info("Main    : before creating thread")
     x = threading.Thread(target=thread_function, args=(1,))
-    log.info("Main    : before running thread")
+    app.logger.info("Main    : before running thread")
     x.start()
 
     print("Server starting at : https://" + args.client_address + ":" + str(args.port) + "/")
     app.run (host=args.client_address, port=args.port, debug=False)
 
-    log.info("Main    : wait for the thread to finish")
+    app.logger.info("Main    : wait for the thread to finish")
     # x.join()
-    log.info("Main    : all done")
+    app.logger.info("Main    : all done")
 
 if __name__ == '__main__':
     args = parse_arguments()

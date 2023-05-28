@@ -124,14 +124,14 @@ function redraw(){
 window.onload = function () {
   currentPic = 0;
 
-  url = document.URL + "GetImages";
-  fetch(url)
-      .then(response => response.json())
-      .then(serverImages => {
-          AsyncLoadImages(serverImages);
-      })
-      .catch(function (error) {
-          console.log(error)
-      });
+  // url = document.URL + "GetImages";
+  // fetch(url)
+  //     .then(response => response.json())
+  //     .then(serverImages => {
+  //         AsyncLoadImages(serverImages);
+  //     })
+  //     .catch(function (error) {
+  //         console.log(error)
+  //     });
   
 }
