@@ -1,2 +1,2 @@
-export VERSION=0.0.24
-export slideshow=localhost:32000/slideshow:0.0.24
+export VERSION=0.0.25
+export slideshow=localhost:32000/slideshow:0.0.25
