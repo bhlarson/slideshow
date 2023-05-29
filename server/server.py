@@ -159,11 +159,9 @@ def ImageList(path= '/farm/pictures/', extensions = ['.png', '.jpg'], search = r
 
 def thread_function():
     images = ImageList()
-    app.logger.info("Thread starting")
-    while send:
 
+    while send:
         emit('my response', {'message': 'Hello'} )
-        app.logger.info("emit")
         time.sleep(2)
     
 def main(args):
