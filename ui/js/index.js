@@ -4,6 +4,7 @@ var severpic = 0;
 var iImage = 0;
 var infiniteLoop = 0;
 var images = [];
+var socket = io();
 
 function ShuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -123,6 +124,10 @@ function redraw(){
 
 window.onload = function () {
   currentPic = 0;
+
+  socket.on('connect', function() {
+    socket.emit('my event', {data: 'I\'m connected!'});
+  });
 
   // url = document.URL + "GetImages";
   // fetch(url)
