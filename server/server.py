@@ -12,7 +12,7 @@ import random
 from pathlib import Path
 from flask import request
 from flask import Flask, jsonify, send_from_directory, Response, logging
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, send
 import threading
 import time
 import logging
