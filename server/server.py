@@ -16,6 +16,7 @@ from flask_socketio import SocketIO, emit
 import threading
 import time
 import logging
+from time import sleep
 
 ks_key = None
 ds = None
@@ -157,12 +158,12 @@ def ImageList(path= '/farm/pictures/', extensions = ['.png', '.jpg'], search = r
     random.shuffle(filelist)
     return filelist
 
-def thread_function():
-    images = ImageList()
-
-    while send:
-        emit('my response', {'message': 'Hello'} )
-        time.sleep(2)
+def forever_thread():
+    # This thread should run forever in the background and be able to
+    # send messages to all clients every one second
+    while True:
+        sleep(1)
+        send("HELLO!", broadcast=True)
     
 def main(args):
 
@@ -170,17 +171,17 @@ def main(args):
     # # x = threading.Thread(target=thread_function, args=(1,))
     # app.logger.info("Main    : before running thread")
     # x.start()
-    thread = socketio.start_background_task(target=thread_function)
+    socketio.start_background_task(forever_thread)
 
 
     print("Server starting at : https://" + args.client_address + ":" + str(args.port) + "/")
     socketio.run(app, host=args.client_address, port=args.port, debug=False)
 
 
-    app.logger.info("Main    : wait for the thread to finish")
-    send = False
-    thread.join()
-    app.logger.info("Main    : all done")
+    # app.logger.info("Main    : wait for the thread to finish")
+    # send = False
+    # thread.join()
+    # app.logger.info("Main    : all done")
 
 if __name__ == '__main__':
 
