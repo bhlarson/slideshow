@@ -85,7 +85,6 @@ def ReadDict(filepath):
 
 ''' Flask Initialization 
 '''
-send = True
 args = parse_arguments()
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
@@ -163,7 +162,7 @@ def forever_thread():
     # send messages to all clients every one second
     while True:
         sleep(1)
-        send("HELLO!", broadcast=True)
+        send("HELLO!")
     
 def main(args):
 
@@ -179,7 +178,6 @@ def main(args):
 
 
     # app.logger.info("Main    : wait for the thread to finish")
-    # send = False
     # thread.join()
     # app.logger.info("Main    : all done")
 
