@@ -12,3 +12,7 @@
 [web-page-screensaver](https://github.com/cwc/web-page-screensaver/releases)
 
 [Asynchronous background tasks in Flask-application using Celery](https://medium.com/@salimonov/asynchronous-background-tasks-in-flask-application-using-celery-1ba873d260d0)
+
+forever_thread is successfully pushing image data but socket.on("image" is not interpreting this as a valid image.
+
+Next: send and receive a valid image with socketio.emit('image'

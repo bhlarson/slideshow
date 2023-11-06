@@ -4,7 +4,7 @@ var severpic = 0;
 var iImage = 0;
 var infiniteLoop = 0;
 var images = [];
-var socket = io();
+const socket = io();
 
 function ShuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -55,6 +55,47 @@ async function AsyncLoadImages(array) {
   StartInterval();
 }
 
+async function OnImage(imagedata){
+
+  // Extract the width and height that was computed by CSS.
+  var width = container.clientWidth;
+  var height = container.clientHeight;
+
+  console.log(width + 'x ' + height)
+
+  canvas
+    .attr("width", width)
+    .attr("height", height);  
+
+    var ctx = canvas.node().getContext("2d");
+    var img = new Image();
+
+    var arrayBufferView = new Uint8Array(imagedata);
+    var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+
+    var img_url = URL.createObjectURL(blob);
+
+    img.src = img_url;
+
+    var arx = img.width/width;
+    var ary = img.height/height;
+
+    var dx = 0;
+    var dy = 0;
+    var dw = width;
+    var dh = height;
+    if(arx > ary){
+      dh = height * ary/arx
+      dy = (height-dh)/2
+    }
+    else{
+      dw = width * arx/ary
+      dx = (width-dw)/2
+    }
+
+    ctx.drawImage(img,0,0,img.width,img.height,dx,dy,dw,dh);
+}
+
 function OnPrevious() {
   if (severpic == 0)
   { severpic = images.length - 1; }
@@ -87,6 +128,8 @@ function StartInterval(interval = 5000) {
         OnNext();
     }, interval);
 }
+
+
 
 function redraw(){
 
@@ -125,8 +168,29 @@ function redraw(){
 window.onload = function () {
   currentPic = 0;
 
+  const params = {
+  };
+
+  const options = {
+    method: 'GET',
+    headers: {'Content-type': 'application/json'},
+    body: JSON.stringify( params )  
+  }; 
+
+  fetch('/list')
+  .then(function (response) {
+      return response.json();
+  }).then(function (response) {
+      console.log('/list response: ' + response);
+  });
+
   socket.on('connect', function() {
     socket.emit('my event', {data: 'I\'m connected!'});
+  });
+
+  socket.on("image", (imagedata) => {
+    // console.log('socket.io.on image'+ imagedata)
+    OnImage(imagedata)
   });
 
   // url = document.URL + "GetImages";

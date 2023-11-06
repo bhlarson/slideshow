@@ -17,10 +17,14 @@ import threading
 import time
 import logging
 from time import sleep
+import io
+import PIL.Image
+import base64
 
 ks_key = None
 ds = None
 tokens = None
+images = None
 
 global args
 
@@ -88,22 +92,34 @@ def ReadDict(filepath):
 args = parse_arguments()
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
+
 creds = ReadDict(args.credentials)
 client_key = next(filter(lambda d: d.get('name') == args.apikey, creds['api']), None)
 assert client_key is not None
 
 app.config['SECRET_KEY'] = client_key['key']
-socketio = SocketIO(app)
+MAX_BUFFER_SIZE = 100 * 1000 * 1000  # 50 MB
+socketio = SocketIO(app, cors_allowed_origins='*', max_http_buffer_size=MAX_BUFFER_SIZE)
 
 # Methods to show client
 @app.route('/')
 def get_static():
     return send_from_directory("../ui/", "index.html")
 
+@app.route('/list')
+def List():
+    result = {'name': 'list'}
+    # result = {'images':images}
+    # request_data = request.json
+
+    return jsonify(result)
+
 @app.route('/<file>', defaults={'path': ''})
 @app.route('/<path:path>/<file>')
 def get_files(path, file):
     return send_from_directory("../ui/" + path, file)
+
+
 
 @socketio.on('message')
 def handle_message(data):
@@ -158,13 +174,25 @@ def ImageList(path= '/farm/pictures/', extensions = ['.png', '.jpg'], search = r
     return filelist
 
 def forever_thread():
+    global images
+    iImage = 0
     # This thread should run forever in the background and be able to
     # send messages to all clients every one second
-    while True:
-        sleep(1)
-        send("HELLO!")
+    with app.test_request_context('/'):
+        while True:
+            sleep(1)
+            print(f'emit {images[iImage]}')
+            with open(images[iImage], "rb") as f:
+                # image_data = base64.b64decode(f.read())
+                image_data = f.read()
+                socketio.emit('image', {'image_data': image_data})
+                iImage += 1
+                if iImage >= len(images):
+                    iImage = 0
     
 def main(args):
+    global images
+    images = ImageList()
 
     # app.logger.info("Main    : before creating thread")
     # # x = threading.Thread(target=thread_function, args=(1,))

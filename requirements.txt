@@ -12,3 +12,4 @@ aioquic
 aistore
 asyncio
 flask-socketio
+Pillow
